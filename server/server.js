@@ -4,6 +4,7 @@ import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import { createClient } from '@supabase/supabase-js';
 import db, { initDatabase } from './database.js';
 import authRoutes from './routes/auth.js';
 import blogRoutes from './routes/blog.js';
@@ -14,6 +15,20 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize Supabase client
+const supabaseUrl = process.env.SUPABASE_URL || 'https://hwvkodrvjrpfhkihezoy.supabase.co';
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+export const supabase = supabaseServiceRoleKey 
+  ? createClient(supabaseUrl, supabaseServiceRoleKey)
+  : null;
+
+// Log Supabase initialization status
+if (supabase) {
+  console.log('✓ Supabase initialized with Service Role Key');
+} else {
+  console.warn('⚠ Supabase Service Role Key not found - falling back to local auth');
+}
 
 // Middleware
 app.use(cors());

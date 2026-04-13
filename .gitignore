@@ -1,0 +1,11 @@
+node_modules
+.env
+.env.local
+.env.*.local
+dist
+.vscode
+*.db
+package-lock.json
+deno.json
+deno-shims.d.ts
+tsconfig.json

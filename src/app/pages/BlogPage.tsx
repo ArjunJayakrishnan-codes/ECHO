@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { Plus, Calendar, User, Heart, MessageCircle, Share2, Bookmark, TrendingUp, Users } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "../context/AuthContext";
+import { notifyEchoDataUpdated } from "../utils/dataEvents";
 
 interface BlogComment {
   id: string;
@@ -111,6 +112,7 @@ export function BlogPage() {
       ];
       setPosts(samplePosts);
       localStorage.setItem("blog-posts", JSON.stringify(samplePosts));
+      notifyEchoDataUpdated();
     }
 
     // Load subscriptions
@@ -123,6 +125,7 @@ export function BlogPage() {
   const savePosts = (updatedPosts: BlogPost[]) => {
     setPosts(updatedPosts);
     localStorage.setItem("blog-posts", JSON.stringify(updatedPosts));
+    notifyEchoDataUpdated();
   };
 
   const saveSubscriptions = (subs: Subscription) => {
@@ -223,15 +226,24 @@ export function BlogPage() {
   const regularPosts = filteredPosts.slice(4);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50/20 dark:from-slate-950 dark:to-indigo-950/20">
-      {/* Newspaper Header */}
-      <div className="border-b-4 border-slate-900 dark:border-slate-100 bg-white dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center mb-6">
-            <h1 className="font-serif text-6xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-              The Echo Times
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Animated Background Orbs */}
+      <div className="pointer-events-none absolute -top-24 -left-20 h-80 w-80 rounded-full bg-sky-300/25 blur-3xl animate-float" />
+      <div className="pointer-events-none absolute -top-16 right-0 h-72 w-72 rounded-full bg-emerald-300/20 blur-3xl animate-float-slow" style={{ animationDelay: "2s" }} />
+      <div className="pointer-events-none absolute top-96 -right-32 h-96 w-96 rounded-full bg-blue-300/15 blur-3xl animate-float" style={{ animationDelay: "4s" }} />
+      <div className="pointer-events-none absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-cyan-300/20 blur-3xl animate-float-slow" style={{ animationDelay: "1s" }} />
+
+      {/* Header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 relative z-10">
+        <div className="app-panel p-6 md:p-8 animate-fade-in-up">
+          <div className="mb-6">
+            <p className="text-xs uppercase tracking-[0.24em] text-sky-700 dark:text-sky-400 font-bold mb-2">
+              Publishing Studio
+            </p>
+            <h1 className="text-4xl md:text-5xl text-slate-900 dark:text-slate-100 mb-2">
+              Blog & Stories
             </h1>
-            <div className="flex items-center justify-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
               <span className="font-medium">{format(new Date(), "EEEE, MMMM d, yyyy")}</span>
               <span>•</span>
               <span>{posts.length} Articles</span>
@@ -240,11 +252,11 @@ export function BlogPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-6">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-t border-slate-200 dark:border-slate-800 pt-6">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setFilter("all")}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                   filter === "all"
                     ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900"
                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -254,7 +266,7 @@ export function BlogPage() {
               </button>
               <button
                 onClick={() => setFilter("following")}
-                className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
                   filter === "following"
                     ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900"
                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -267,7 +279,7 @@ export function BlogPage() {
             
             <button
               onClick={() => setIsCreating(!isCreating)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-200 font-medium"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-600 to-blue-700 text-white rounded-xl hover:shadow-lg hover:shadow-sky-500/30 transition-all duration-200 font-medium"
             >
               <Plus className="w-5 h-5" />
               Write Story
@@ -279,7 +291,7 @@ export function BlogPage() {
       {/* Create Post Modal */}
       {isCreating && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
             <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-6">
               <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Write Your Story</h2>
             </div>
@@ -344,7 +356,7 @@ export function BlogPage() {
       )}
 
       {/* Newspaper Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 relative z-10">
         {filteredPosts.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -360,13 +372,14 @@ export function BlogPage() {
             {featuredPost && (
               <article
                 onClick={() => navigate(`/blog/${featuredPost.id}`)}
-                className="mb-12 border-4 border-slate-900 dark:border-slate-100 bg-white dark:bg-slate-900 cursor-pointer group overflow-hidden"
+                className="mb-12 app-panel cursor-pointer group overflow-hidden animate-fade-in-up"
+                style={{ animationDelay: "0.1s" }}
               >
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="p-8 lg:p-12 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center gap-3 mb-4">
-                        <span className="px-3 py-1 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wide">
+                        <span className="px-3 py-1 bg-sky-700 text-white text-xs font-bold uppercase tracking-wide rounded-full">
                           Featured
                         </span>
                         <span className="text-sm text-slate-500 dark:text-slate-400">{featuredPost.category}</span>
@@ -451,7 +464,7 @@ export function BlogPage() {
                     </div>
                   </div>
                   
-                  <div className="h-full min-h-[400px] bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+                  <div className="h-full min-h-[320px] md:min-h-[400px] bg-gradient-to-br from-sky-600 to-blue-800 flex items-center justify-center">
                     <div className="text-white text-6xl font-bold opacity-20">
                       {featuredPost.category[0]}
                     </div>
@@ -462,18 +475,19 @@ export function BlogPage() {
 
             {/* Trending Section */}
             {trendingPosts.length > 0 && (
-              <div className="mb-12">
-                <h2 className="font-serif text-3xl font-bold mb-6 text-slate-900 dark:text-slate-100 border-b-2 border-slate-900 dark:border-slate-100 pb-2">
+              <div className="mb-12 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+                <h2 className="text-3xl font-bold mb-6 text-slate-900 dark:text-slate-100 border-b border-slate-200 dark:border-slate-800 pb-2">
                   Trending Now
                 </h2>
                 <div className="grid md:grid-cols-3 gap-6">
-                  {trendingPosts.map((post) => (
+                  {trendingPosts.map((post, idx) => (
                     <article
                       key={post.id}
                       onClick={() => navigate(`/blog/${post.id}`)}
-                      className="border-2 border-slate-900 dark:border-slate-100 bg-white dark:bg-slate-900 cursor-pointer group hover:shadow-xl transition-all"
+                      className="app-panel cursor-pointer group hover:shadow-xl transition-all overflow-hidden animate-scale-in"
+                      style={{ animationDelay: `${0.25 + idx * 0.08}s` }}
                     >
-                      <div className="h-48 bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center">
+                      <div className="h-48 bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center">
                         <span className="text-white text-5xl font-bold opacity-30">{post.category[0]}</span>
                       </div>
                       <div className="p-6">
@@ -558,16 +572,17 @@ export function BlogPage() {
 
             {/* More Stories */}
             {regularPosts.length > 0 && (
-              <div>
-                <h2 className="font-serif text-3xl font-bold mb-6 text-slate-900 dark:text-slate-100 border-b-2 border-slate-900 dark:border-slate-100 pb-2">
+              <div className="animate-fade-in-up" style={{ animationDelay: "0.35s" }}>
+                <h2 className="text-3xl font-bold mb-6 text-slate-900 dark:text-slate-100 border-b border-slate-200 dark:border-slate-800 pb-2">
                   More Stories
                 </h2>
                 <div className="grid md:grid-cols-2 gap-6">
-                  {regularPosts.map((post) => (
+                  {regularPosts.map((post, idx) => (
                     <article
                       key={post.id}
                       onClick={() => navigate(`/blog/${post.id}`)}
-                      className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 cursor-pointer group hover:border-slate-900 dark:hover:border-slate-100 transition-all"
+                      className="app-panel p-6 cursor-pointer group hover:border-slate-400 dark:hover:border-slate-500 transition-all animate-slide-in-left"
+                      style={{ animationDelay: `${0.4 + idx * 0.08}s` }}
                     >
                       <span className="text-xs font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400 mb-2 block">
                         {post.category}

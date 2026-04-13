@@ -1,8 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { BookOpen, MessageSquare, StickyNote, ArrowRight, Check, Sparkles, Moon, Sun } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Check,
+  MessageSquare,
+  Moon,
+  Sparkles,
+  StickyNote,
+  Sun,
+  Workflow,
+} from "lucide-react";
 
 export function LandingPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -51,121 +61,151 @@ export function LandingPage() {
   const features = [
     {
       icon: BookOpen,
-      title: "Blogging",
-      description: "Create and share beautiful blog posts with your audience",
+      title: "Publishing",
+      description: "Long-form writing tools with structured storytelling layouts.",
     },
     {
       icon: StickyNote,
-      title: "Notes",
-      description: "Rich text editor with formatting, images, and organization",
+      title: "Knowledge Base",
+      description: "Rich notes, collaboration, and searchable context in one workspace.",
     },
     {
       icon: MessageSquare,
       title: "Messaging",
-      description: "Real-time conversations with contacts and read receipts",
+      description: "Fast communication with clean, focused conversation design.",
     },
   ];
 
   const benefits = [
-    "All-in-one productivity platform",
-    "Beautiful, modern interface",
-    "Secure and private",
-    "Lightning fast performance",
+    "Unified tools for writing, notes, and communication",
+    "Deliberate visual system designed for clarity",
+    "Secure identity flow with session persistence",
+    "Responsive behavior across laptop, tablet, and phone",
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950/30">
-      {/* Navigation */}
-      <nav className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <Sparkles className="w-6 h-6 text-white" />
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-950">
+      {/* Animated Background Orbs */}
+      <div className="pointer-events-none absolute -top-24 -left-20 h-80 w-80 rounded-full bg-sky-300/25 blur-3xl animate-float" />
+      <div className="pointer-events-none absolute -top-16 right-0 h-72 w-72 rounded-full bg-emerald-300/20 blur-3xl animate-float-slow" style={{ animationDelay: "2s" }} />
+      <div className="pointer-events-none absolute top-1/2 left-1/4 h-96 w-96 rounded-full bg-blue-200/15 blur-3xl animate-float" style={{ animationDelay: "4s" }} />
+      <div className="pointer-events-none absolute bottom-0 right-1/4 h-80 w-80 rounded-full bg-cyan-200/10 blur-3xl animate-float-slow" style={{ animationDelay: "1s" }} />
+
+      <nav className="sticky top-0 z-40 border-b border-slate-200/60 dark:border-slate-800/60 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 group cursor-pointer">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-600 to-blue-800 flex items-center justify-center shadow-lg shadow-sky-500/25 group-hover:shadow-xl group-hover:shadow-sky-500/40 group-hover:scale-105 transition-all duration-300">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-sky-600 group-hover:to-blue-700 group-hover:bg-clip-text transition-all">
               Echo
-            </h1>
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Digital Workspace</p>
+            </div>
           </div>
-          <button
-            onClick={toggleTheme}
-            className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-          >
-            {theme === "light" ? (
-              <Moon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
-            ) : (
-              <Sun className="w-5 h-5 text-slate-600 dark:text-slate-300" />
-            )}
-          </button>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 hover:shadow-md transition-all duration-200"
+              title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+            >
+              {theme === "light" ? (
+                <Moon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+              ) : (
+                <Sun className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+              )}
+            </button>
+          </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left Column - Hero Content */}
-          <div>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-medium mb-6">
-              <Sparkles className="w-4 h-4" />
-              <span>Your All-in-One Workspace</span>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+        <div className="grid lg:grid-cols-12 gap-8 xl:gap-14 items-start">
+          <div className="lg:col-span-7">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-sky-200/80 dark:border-sky-900/60 bg-gradient-to-r from-sky-50/80 to-blue-50/60 dark:from-sky-950/50 dark:to-slate-900/50 text-sky-700 dark:text-sky-300 text-xs font-bold tracking-widest uppercase mb-6 hover:border-sky-300/80 dark:hover:border-sky-800/80 transition-all group animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+              <Workflow className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+              Crafted with Intention
             </div>
             
-            <h2 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Everything
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-[1.0] tracking-tight text-slate-900 dark:text-slate-100 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+              Built for teams that ship,
+              <span className="block bg-gradient-to-r from-sky-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent dark:from-sky-400 dark:via-blue-400 dark:to-cyan-400">
+                write, and collaborate fast.
               </span>
-              <br />
-              <span className="text-slate-800 dark:text-slate-100">you need in one place</span>
             </h2>
             
-            <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
-              Blog, take notes, and chat—all in one beautiful, unified platform designed for productivity and creativity.
+            <p className="text-lg md:text-xl text-slate-700 dark:text-slate-300 mb-10 max-w-2xl leading-relaxed font-medium animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+              Your all-in-one workspace for writing, collaborating, and staying organized. Seamlessly switch between blog publishing, note-taking, and team messaging—all in one beautiful, intuitive platform.
             </p>
 
-            {/* Benefits */}
-            <div className="space-y-3 mb-10">
+            <div className="space-y-3 mb-10 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
               {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-4 h-4 text-white" />
+                <div key={index} className="flex items-center gap-3 group animate-fade-in-up" style={{ animationDelay: `${0.5 + index * 0.08}s` }}>
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform">
+                    <Check className="w-4 h-4 text-white font-bold" />
                   </div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">{benefit}</span>
+                  <span className="text-slate-700 dark:text-slate-200 font-medium text-base group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors">
+                    {benefit}
+                  </span>
                 </div>
               ))}
             </div>
 
-            {/* Features Grid */}
-            <div className="grid sm:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-3 gap-3 md:gap-4 max-w-2xl animate-fade-in-up" style={{ animationDelay: "0.7s" }}>
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className="p-5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-2xl hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-200"
+                  className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-gradient-to-br from-white/90 to-slate-50/80 dark:from-slate-900/90 dark:to-slate-800/80 hover:shadow-xl hover:border-sky-300/50 dark:hover:border-sky-700/50 hover:-translate-y-1 transition-all duration-300 group cursor-pointer animate-fade-in-up"
+                  style={{ animationDelay: `${0.8 + index * 0.1}s` }}
                 >
-                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mb-3 shadow-md">
-                    <feature.icon className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center mb-3 group-hover:shadow-lg group-hover:shadow-sky-500/30 transition-all duration-300 transform group-hover:scale-110 animate-glow-pulse">
+                    <feature.icon className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-1">{feature.title}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{feature.description}</p>
+                  <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-1.5 text-sm md:text-base">{feature.title}</h3>
+                  <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{feature.description}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right Column - Auth Form */}
-          <div className="lg:pl-12">
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl shadow-indigo-500/10 p-8 lg:p-10">
-              <div className="mb-8">
+          <div className="lg:col-span-5 xl:col-span-5 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-white/95 to-slate-50/80 dark:from-slate-900/95 dark:to-slate-800/80 shadow-2xl shadow-sky-500/5 dark:shadow-slate-900/30 p-6 md:p-8 lg:p-10 backdrop-blur-sm">
+              <div className="mb-7">
+                <div className="inline-flex rounded-xl bg-slate-100/80 dark:bg-slate-800/80 p-1 mb-5 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50">
+                  <button
+                    onClick={() => setIsLogin(true)}
+                    className={`px-4 py-2 text-sm rounded-lg font-semibold transition-all duration-300 ${
+                      isLogin
+                        ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30"
+                        : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
+                    }`}
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => setIsLogin(false)}
+                    className={`px-4 py-2 text-sm rounded-lg font-semibold transition-all duration-300 ${
+                      !isLogin
+                        ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30"
+                        : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
+                    }`}
+                  >
+                    Create Account
+                  </button>
+                </div>
+
                 <h3 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-2">
                   {isLogin ? "Welcome back" : "Get started"}
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400">
-                  {isLogin
-                    ? "Sign in to continue to Echo"
-                    : "Create your free account today"}
+                <p className="text-slate-600 dark:text-slate-400 text-base">
+                  {isLogin ? "Sign in to continue with your workspace" : "Create your account in under a minute"}
                 </p>
               </div>
 
               {error && (
-                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
+                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm font-medium">
                   {error}
                 </div>
               )}
@@ -173,14 +213,14 @@ export function LandingPage() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 {!isLogin && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                       Full Name
                     </label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 dark:focus:border-sky-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       placeholder="John Doe"
                       required={!isLogin}
                     />
@@ -188,28 +228,28 @@ export function LandingPage() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                     Email
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 dark:focus:border-sky-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     placeholder="you@example.com"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                     Password
                   </label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 dark:focus:border-sky-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     placeholder="••••••••"
                     required
                     minLength={6}
@@ -219,7 +259,7 @@ export function LandingPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-gradient-to-r from-sky-600 to-blue-700 text-white rounded-xl font-semibold hover:shadow-2xl hover:shadow-sky-500/40 hover:from-sky-700 hover:to-blue-800 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <>
@@ -229,7 +269,7 @@ export function LandingPage() {
                   ) : (
                     <>
                       <span>{isLogin ? "Sign In" : "Create Account"}</span>
-                      <ArrowRight className="w-5 h-5" />
+                      <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                     </>
                   )}
                 </button>
@@ -244,23 +284,13 @@ export function LandingPage() {
                     setPassword("");
                     setName("");
                   }}
-                  className="text-indigo-600 dark:text-indigo-400 hover:text-purple-600 dark:hover:text-purple-400 font-medium transition-colors"
+                  className="text-sky-700 dark:text-sky-300 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
                 >
                   {isLogin
                     ? "Don't have an account? Sign up"
                     : "Already have an account? Sign in"}
                 </button>
               </div>
-            </div>
-
-            {/* Demo Credentials */}
-            <div className="mt-6 p-4 bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl">
-              <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">
-                <span className="font-semibold text-indigo-600 dark:text-indigo-400">Quick Demo:</span> Create any account to get started, or use these credentials:
-              </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
-                Email: demo@echo.com • Password: demo123
-              </p>
             </div>
           </div>
         </div>

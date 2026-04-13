@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { authAPI } from "../services/api";
 
 interface User {
   id: string;
@@ -13,6 +14,8 @@ interface AuthContextType {
   signup: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  loading: boolean;
+  error: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +23,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Check for existing session in localStorage
@@ -31,32 +36,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(true);
       } catch (error) {
         console.log("Error loading saved user:", error);
+        localStorage.removeItem("echo_user");
       }
     }
+    setLoading(false);
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      // Get users from localStorage
-      const usersData = localStorage.getItem("echo_users");
-      const users = usersData ? JSON.parse(usersData) : {};
-
-      if (users[email] && users[email].password === password) {
-        const userData: User = {
-          id: users[email].id,
-          email: email,
-          name: users[email].name,
-          accessToken: `token-${Date.now()}`,
-        };
-        setUser(userData);
-        setIsAuthenticated(true);
-        localStorage.setItem("echo_user", JSON.stringify(userData));
-        return true;
-      }
+      setLoading(true);
+      setError(null);
+      const response = await authAPI.login(email, password);
+      
+      const userData: User = {
+        id: response.user.id,
+        email: response.user.email,
+        name: response.user.name,
+        accessToken: response.token,
+      };
+      
+      setUser(userData);
+      setIsAuthenticated(true);
+      localStorage.setItem("echo_user", JSON.stringify(userData));
+      return true;
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Login failed";
+      setError(errorMsg);
+      console.log("Login error:", err);
       return false;
-    } catch (error) {
-      console.log("Login error:", error);
-      return false;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,46 +75,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     name: string
   ): Promise<boolean> => {
     try {
-      // Get existing users
-      const usersData = localStorage.getItem("echo_users");
-      const users = usersData ? JSON.parse(usersData) : {};
-
-      // Check if user already exists
-      if (users[email]) {
-        console.log("User already exists");
-        return false;
-      }
-
-      // Create new user
-      users[email] = {
-        id: `user-${Date.now()}`,
-        email,
-        password,
-        name,
+      setLoading(true);
+      setError(null);
+      const response = await authAPI.signup(email, password, name);
+      
+      const userData: User = {
+        id: response.user.id,
+        email: response.user.email,
+        name: response.user.name,
+        accessToken: response.token,
       };
-
-      localStorage.setItem("echo_users", JSON.stringify(users));
-
-      // Auto login after signup
-      return await login(email, password);
-    } catch (error) {
-      console.log("Signup error:", error);
+      
+      setUser(userData);
+      setIsAuthenticated(true);
+      localStorage.setItem("echo_user", JSON.stringify(userData));
+      return true;
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Signup failed";
+      setError(errorMsg);
+      console.log("Signup error:", err);
       return false;
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
     try {
+      setLoading(true);
+      setError(null);
+      await authAPI.logout();
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("echo_user");
     } catch (error) {
       console.log("Logout error:", error);
+      // Still logout locally even if API call fails
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("echo_user");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, isAuthenticated, loading, error }}>
       {children}
     </AuthContext.Provider>
   );

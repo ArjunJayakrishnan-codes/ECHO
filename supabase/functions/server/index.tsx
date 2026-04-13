@@ -7,9 +7,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const app = new Hono();
 
 // Initialize Supabase client
-const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "https://hwvkodrvjrpfhkihezoy.supabase.co";
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "sb_publishable_ybnavdiK_K3fGdcRE0eR_g_kcHWR3NL";
 
 // Enable logger
 app.use('*', logger(console.log));
@@ -27,19 +27,26 @@ app.use(
 );
 
 // Health check endpoint
-app.get("/make-server-8b681bab/health", (c) => {
+app.get("/make-server-8b681bab/health", (c: any) => {
   return c.json({ status: "ok" });
 });
 
 // ============ AUTH ROUTES ============
 
 // Sign up endpoint
-app.post("/make-server-8b681bab/auth/signup", async (c) => {
+app.post("/make-server-8b681bab/auth/signup", async (c: any) => {
   try {
     const { email, password, name } = await c.req.json();
     
     if (!email || !password || !name) {
       return c.json({ error: "Missing required fields" }, 400);
+    }
+
+    if (!supabaseServiceKey) {
+      return c.json(
+        { error: "Server misconfiguration: SUPABASE_SERVICE_ROLE_KEY is required for signup" },
+        500,
+      );
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -73,7 +80,12 @@ async function verifyUser(authHeader: string | null) {
   }
   
   const token = authHeader.split(' ')[1];
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const authKey = supabaseServiceKey || supabaseAnonKey;
+  if (!authKey) {
+    return null;
+  }
+
+  const supabase = createClient(supabaseUrl, authKey);
   const { data: { user }, error } = await supabase.auth.getUser(token);
   
   if (error || !user) {
@@ -84,7 +96,7 @@ async function verifyUser(authHeader: string | null) {
 }
 
 // Get all notes for a user (including shared notes)
-app.get("/make-server-8b681bab/notes", async (c) => {
+app.get("/make-server-8b681bab/notes", async (c: any) => {
   try {
     const user = await verifyUser(c.req.header('Authorization'));
     if (!user) {
@@ -107,7 +119,7 @@ app.get("/make-server-8b681bab/notes", async (c) => {
 });
 
 // Get a single note
-app.get("/make-server-8b681bab/notes/:id", async (c) => {
+app.get("/make-server-8b681bab/notes/:id", async (c: any) => {
   try {
     const user = await verifyUser(c.req.header('Authorization'));
     if (!user) {
@@ -137,7 +149,7 @@ app.get("/make-server-8b681bab/notes/:id", async (c) => {
 });
 
 // Create a new note
-app.post("/make-server-8b681bab/notes", async (c) => {
+app.post("/make-server-8b681bab/notes", async (c: any) => {
   try {
     const user = await verifyUser(c.req.header('Authorization'));
     if (!user) {
@@ -168,7 +180,7 @@ app.post("/make-server-8b681bab/notes", async (c) => {
 });
 
 // Update a note
-app.put("/make-server-8b681bab/notes/:id", async (c) => {
+app.put("/make-server-8b681bab/notes/:id", async (c: any) => {
   try {
     const user = await verifyUser(c.req.header('Authorization'));
     if (!user) {
@@ -211,7 +223,7 @@ app.put("/make-server-8b681bab/notes/:id", async (c) => {
 });
 
 // Delete a note
-app.delete("/make-server-8b681bab/notes/:id", async (c) => {
+app.delete("/make-server-8b681bab/notes/:id", async (c: any) => {
   try {
     const user = await verifyUser(c.req.header('Authorization'));
     if (!user) {
@@ -240,7 +252,7 @@ app.delete("/make-server-8b681bab/notes/:id", async (c) => {
 });
 
 // Share a note
-app.post("/make-server-8b681bab/notes/:id/share", async (c) => {
+app.post("/make-server-8b681bab/notes/:id/share", async (c: any) => {
   try {
     const user = await verifyUser(c.req.header('Authorization'));
     if (!user) {
@@ -285,7 +297,7 @@ app.post("/make-server-8b681bab/notes/:id/share", async (c) => {
 });
 
 // Remove share access
-app.delete("/make-server-8b681bab/notes/:id/share/:email", async (c) => {
+app.delete("/make-server-8b681bab/notes/:id/share/:email", async (c: any) => {
   try {
     const user = await verifyUser(c.req.header('Authorization'));
     if (!user) {
@@ -323,7 +335,7 @@ app.delete("/make-server-8b681bab/notes/:id/share/:email", async (c) => {
 });
 
 // Add comment to note
-app.post("/make-server-8b681bab/notes/:id/comments", async (c) => {
+app.post("/make-server-8b681bab/notes/:id/comments", async (c: any) => {
   try {
     const user = await verifyUser(c.req.header('Authorization'));
     if (!user) {
