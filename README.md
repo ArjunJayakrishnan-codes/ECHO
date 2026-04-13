@@ -339,4 +339,3 @@ MIT License - see LICENSE file for details
 
 **Echo** - Your all-in-one platform for blogging, notes, and messaging.
 
-Made with ❤️ for seamless communication and productivity.
